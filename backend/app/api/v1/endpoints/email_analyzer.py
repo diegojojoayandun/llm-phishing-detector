@@ -43,13 +43,20 @@ def send_telegram_alert(subject, content, detected_urls):
 
 
 def analyze_with_llm(text):
-    result = llm(text)
-    label = result[0]["label"]
-    return label
+    """Analiza el texto usando el modelo LLM para detectar phishing."""
+    try:
+        result = llm(text)
+        return result[0]["label"]
+    except Exception as e:
+        return "ERROR"
 
 
 @router.post("/analyze_email/")
 async def analyze_email(subject: str = Form(None), content: str = Form(None), file: UploadFile = None):
+    """Analiza el correo para detectar phishing."""
+    if not subject and not content and not file:
+        raise HTTPException(status_code=400, detail="Sin datos de entrada")
+
     full_text = f"Subject: {subject}\n\n{content}"
     if file:
         file_content = await file.read()
@@ -61,11 +68,16 @@ async def analyze_email(subject: str = Form(None), content: str = Form(None), fi
     # Análisis del contenido con el modelo LLM
     llm_result = analyze_with_llm(full_text)
 
-    # Si se detectan URLs sospechosas o el modelo predice phishing
-    # "NEGATIVE" es el resultado para sentimientos negativos, usado aquí como un indicio de phishing.
-    if detected_urls or llm_result == "NEGATIVE":
+    if detected_urls or llm_result in ["phishing", "suspicious"]:
         send_telegram_alert(subject, content, detected_urls)
-        # save_email_analysis(subject, content, detected_urls, llm_result)  # Guardar en la base de datos
-        return {"status": "Phishing detected", "suspicious_urls": detected_urls, "model_analysis": llm_result}
+        return {
+            "status": "Phishing detected",
+            "suspicious_urls": detected_urls,
+            "model_analysis": llm_result
+        }
 
-    return {"status": "Legitimate", "suspicious_urls": [], "model_analysis": llm_result}
+    return {
+        "status": "Legitimate",
+        "suspicious_urls": [],
+        "model_analysis": llm_result
+    }
