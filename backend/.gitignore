@@ -1,0 +1,50 @@
+# Bytecode files
+__pycache__/
+*.py[cod]
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# pytest
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+
+# PyCharm
+.idea/
+
+# VSCode
+.vscode/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# VS Code settings
+.vscode/
+
+# Environments
+*.env
+*.env.*
+
+# Pylint
+pylint-report.txt
+pylint-output.txt
