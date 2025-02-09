@@ -1,17 +1,23 @@
 from fastapi import APIRouter, Form, UploadFile, Depends, HTTPException
+import os
 import re
 import requests
+from dotenv import load_dotenv
 from app.repositories.email_repository import save_email_analysis
 from transformers import pipeline
 
 router = APIRouter()
 
-TELEGRAM_TOKEN = "7587228333:AAHX34X7vrT6iKIS-Ee8sHzpqxi6m5933KY"
-TELEGRAM_CHAT_ID = "7934732373"
+load_dotenv()
+
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 # Cargar el modelo LLM para análisis de texto
 llm = pipeline("text-classification",
                model="roberta-base")
+
+# Cargar las variables del archivo .env
 
 
 def detect_suspicious_urls(text):
